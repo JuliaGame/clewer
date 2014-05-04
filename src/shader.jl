@@ -1,7 +1,3 @@
-type Shader
-    id :: Uint32
-end
-
 function newShader(filename :: String, shaderType :: Uint16)
     file = open(filename)
     src = readall(file)
