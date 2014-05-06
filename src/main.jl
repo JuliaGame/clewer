@@ -3,8 +3,15 @@ OPENGL_MAJOR = 4
 OPENGL_MINOR = 2
 
 const OpenGLver="$OPENGL_MAJOR.$OPENGL_MINOR"
-using OpenGL
+using ModernGL
+
 import GLFW
+
+import ModernGL.getprocaddress
+
+function getprocaddress(name::ASCIIString)
+    GLFW.GetProcAddress(name)
+end
 
 include("shader.jl")
 
@@ -65,7 +72,7 @@ GLFW.WindowHint(GLFW.CONTEXT_VERSION_MINOR, OPENGL_MINOR)
 width = 800
 height = 600
 
-window = GLFW.CreateWindow(width, height, "Hello World", C_NULL, C_NULL)
+window = GLFW.CreateWindow(width, height, "Hello World")
 
 GLFW.MakeContextCurrent(window)
 

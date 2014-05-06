@@ -1,4 +1,4 @@
-function newShader(filename :: String, shaderType :: Uint16)
+function newShader(filename :: String, shaderType)
     file = open(filename)
     src = readall(file)
     close(file)
