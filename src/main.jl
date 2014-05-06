@@ -157,7 +157,7 @@ glEnableVertexAttribArray(posAttrib)
 
 triangle = drawTriangle()
 
-last_time = time_ns() / 1e9
+last_time = time()
 frames = 0.0
 counter = 0.0
 
@@ -167,7 +167,7 @@ while GLFW.WindowShouldClose(window) == 0
     GLFW.PollEvents()
 
     old = last_time
-    last_time = time_ns() / 1e9
+    last_time = time()
     counter += last_time - old
     frames += 1
     if counter >= 1
@@ -177,7 +177,7 @@ while GLFW.WindowShouldClose(window) == 0
         frames = 0
     end
     while true
-        dif = time_ns() / 1e9 - last_time
+        dif = time() - last_time
         if dif >= 0.008
             break
         end
