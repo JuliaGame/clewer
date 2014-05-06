@@ -1,6 +1,5 @@
-
-OPENGL_MAJOR = 4
-OPENGL_MINOR = 2
+const OPENGL_MAJOR = 4
+const OPENGL_MINOR = 2
 
 const OpenGLver="$OPENGL_MAJOR.$OPENGL_MINOR"
 using ModernGL
