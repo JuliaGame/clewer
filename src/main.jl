@@ -13,55 +13,8 @@ function getprocaddress(name::ASCIIString)
 end
 
 include("shader.jl")
-
-type Triangle
-    vao :: GLuint
-    vbo :: GLuint
-    program :: GLuint
-    pos :: GLint
-
-    function Triangle()
-        vertices = [
-            0.0f0, 0.2f0,
-            0.5f0, -0.5f0,
-            -0.5f0, -0.5f0
-        ]
-
-        vao = Array(GLuint, 1)
-        glGenVertexArrays(1, vao)
-        assert(vao[1] != 0)
-        glBindVertexArray(vao[1])
-
-        vbo = Array(GLuint, 1)
-        glGenBuffers(1, vbo)
-        assert(vbo[1] != 0)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
-        glBufferData(GL_ARRAY_BUFFER, size(vertices, 1) * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
-
-        vertexShader = newShader("data/glsl/simple.vert", GL_VERTEX_SHADER)
-        fragmentShader = newShader("data/glsl/simple.frag", GL_FRAGMENT_SHADER)
-
-        shaderProgram = glCreateProgram()
-        glAttachShader(shaderProgram, vertexShader)
-        glAttachShader(shaderProgram, fragmentShader)
-        glLinkProgram(shaderProgram)
-        glUseProgram(shaderProgram)
-
-        posAttrib = glGetAttribLocation(shaderProgram, "position")
-        assert(posAttrib >= 0)
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
-        glEnableVertexAttribArray(posAttrib)
-
-        uniColor = glGetUniformLocation(shaderProgram, "triangleColor")
-        assert(uniColor != -1)
-        glUniform3f(uniColor, 1, 1, 0)
-
-        uniPos = glGetUniformLocation(shaderProgram, "pos")
-        assert(uniPos != -1)
-
-        return new(vao[1], vbo[1], shaderProgram, uniPos)
-    end
-end
+include("triangle.jl")
+include("circle.jl")
 
 GLFW.Init()
 
@@ -156,6 +109,7 @@ glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
 glEnableVertexAttribArray(posAttrib)
 
 triangle = Triangle()
+circle = Circle()
 
 last_time = time()
 frames = 0.0
@@ -173,7 +127,8 @@ while GLFW.WindowShouldClose(window) == 0
     if counter >= 1
         frames *= counter
         counter -= 1
-        GLFW.SetWindowTitle(window, "clewer - FPS: $frames")
+        framesRounded::Int = round(frames)
+        GLFW.SetWindowTitle(window, "clewer - FPS: $framesRounded")
         frames = 0
     end
     while true
@@ -190,14 +145,8 @@ while GLFW.WindowShouldClose(window) == 0
     glBindRenderbuffer(GL_FRAMEBUFFER, buffer[1])
     glBindFramebuffer(GL_FRAMEBUFFER, fbo[1])
 
-    glBindVertexArray(triangle.vao)
-    glBindBuffer(GL_ARRAY_BUFFER, triangle.vbo)
-    glUseProgram(triangle.program)
-
-    glUniform2f(triangle.pos, 0.5, 0.5)
-    glClearColor(0, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT)
-    glDrawArrays(GL_TRIANGLES, 0, 3)
+    #draw(triangle)
+    draw(circle)
 
     glBindRenderbuffer(GL_RENDERBUFFER, 0)
 
