@@ -6,24 +6,63 @@ type Window
     buffer :: Array{Uint32, 1}
     fbo :: Array{Uint32, 1}
     texture :: Array{Uint32, 1}
+    vbo :: Array{Uint32, 1}
     shaderProgram :: GLuint
 
     function Window(width, height)
-        window = GLFW.CreateWindow(width, height, "Hello World")
-        GLFW.MakeContextCurrent(window)
+        glfwWindow = GLFW.CreateWindow(width, height, "Hello World")
+        GLFW.MakeContextCurrent(glfwWindow)
+        GLFW.SwapInterval(1) # enable vsync
 
         vao = Array(Uint32, 1)
         glGenVertexArrays(1, vao)
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
 
-        this = new(window, width, height, vao, Array(Uint32, 1),
-                   Array(Uint32, 1), Array(Uint32, 1))
+        window = new(glfwWindow, width, height, vao, Array(Uint32, 1),
+                   Array(Uint32, 1), Array(Uint32, 1), Array(Uint32, 1))
 
-        GLFW.SetWindowSizeCallback(window, (_, width, height) -> resizeWindow(this, width, height))
+        GLFW.SetWindowSizeCallback(glfwWindow, (_, width, height) -> resizeWindow(window, width, height))
 
-        resizeWindow(this, width, height)
-        return this
+        vertexes = [
+            0.0f0, 0.0f0, 0.0f0, 1.0f0, 1.0f0, 1.0f0, 1.0f0, 0.0f0, # texture coordinates
+            -1.0f0, -1.0f0,
+            -1.0f0, 1.0f0,
+            1.0f0, 1.0f0,
+            1.0f0, -1.0f0
+        ]
+        glGenBuffers(1, window.vbo)
+        assert(window.vbo[1] != 0)
+
+        resizeWindow(window, width, height)
+
+        glBindVertexArray(window.vao[1])
+        glBindBuffer(GL_ARRAY_BUFFER, window.vbo[1])
+
+        glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
+
+        vertexShader = newShader("data/glsl/texture.vert", GL_VERTEX_SHADER)
+        fragmentShader = newShader("data/glsl/texture.frag", GL_FRAGMENT_SHADER)
+
+        window.shaderProgram = glCreateProgram()
+        assert(window.shaderProgram != 0)
+
+        glAttachShader(window.shaderProgram, vertexShader)
+        glAttachShader(window.shaderProgram, fragmentShader)
+        glLinkProgram(window.shaderProgram)
+        glUseProgram(window.shaderProgram)
+
+        posAttrib = glGetAttribLocation(window.shaderProgram, "position")
+        assert(posAttrib >= 0)
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
+        glEnableVertexAttribArray(posAttrib)
+
+        posAttrib = glGetAttribLocation(window.shaderProgram, "texcoord")
+        assert(posAttrib >= 0)
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
+        glEnableVertexAttribArray(posAttrib)
+
+        return window
     end
 end
 
@@ -51,24 +90,12 @@ function resizeWindow(window::Window, width, height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
 
-    vertexes = [
-        0.0f0, 0.0f0, 0.0f0, 1.0f0, 1.0f0, 1.0f0, 1.0f0, 0.0f0, # texture coordinates
-        -1.0f0, -1.0f0,
-        -1.0f0, 1.0f0,
-        1.0f0, 1.0f0,
-        1.0f0, -1.0f0
-    ]
     vertexBuffer = Array(Uint32, 1)
     glGenBuffers(1, vertexBuffer)
     assert(vertexBuffer[1] != 0)
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[1])
 
-    vbo = Array(Uint32, 1)
-    glGenBuffers(1, vbo)
-    assert(vbo[1] != 0)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
-
-    glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
+    glBindBuffer(GL_ARRAY_BUFFER, window.vbo[1]) # FIXME: Is this really needed?
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, window.texture[1],
                            0)
@@ -81,30 +108,6 @@ function resizeWindow(window::Window, width, height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0)
     glBindRenderbuffer(GL_RENDERBUFFER, 0)
-
-    glBindVertexArray(window.vao[1])
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
-
-    vertexShader = newShader("data/glsl/texture.vert", GL_VERTEX_SHADER)
-    fragmentShader = newShader("data/glsl/texture.frag", GL_FRAGMENT_SHADER)
-
-    window.shaderProgram = glCreateProgram()
-    assert(window.shaderProgram != 0)
-
-    glAttachShader(window.shaderProgram, vertexShader)
-    glAttachShader(window.shaderProgram, fragmentShader)
-    glLinkProgram(window.shaderProgram)
-    glUseProgram(window.shaderProgram)
-
-    posAttrib = glGetAttribLocation(window.shaderProgram, "position")
-    assert(posAttrib >= 0)
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
-    glEnableVertexAttribArray(posAttrib)
-
-    posAttrib = glGetAttribLocation(window.shaderProgram, "texcoord")
-    assert(posAttrib >= 0)
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
-    glEnableVertexAttribArray(posAttrib)
 end
 
 function mainLoop(window::Window)
