@@ -45,8 +45,5 @@ function draw(triangle::Triangle)
     glBindVertexArray(triangle.vao)
     glBindBuffer(GL_ARRAY_BUFFER, triangle.vbo)
     glUseProgram(triangle.program)
-
-    glClearColor(0, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT)
     glDrawArrays(GL_TRIANGLES, 0, 3)
 end

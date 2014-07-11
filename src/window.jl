@@ -149,11 +149,11 @@ function mainLoop(window::Window)
             sleep(0.008 - dif)
         end
 
-        glClearColor(0.5, 0.5, 0.5, 1)
-        glClear(GL_COLOR_BUFFER_BIT)
-
         glBindRenderbuffer(GL_FRAMEBUFFER, window.buffer[1])
         glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
+
+        glClearColor(0.5, 0.5, 0.5, 1)
+        glClear(GL_COLOR_BUFFER_BIT)
 
         if int(last_time) % 2 == 0
             draw(triangle)

@@ -5,11 +5,10 @@ type Circle
     verticesCount :: GLsizei
 
     function Circle(shaderPrograms :: ShaderPrograms)
+        self = new()
         vertices :: Array{GLfloat,1} = vcat([0.0f0, 0.0f0],
             vcat( { [cos(i), sin(i)] for i = 0:pi/32:2*pi } ... ))
-        verticesCount = size(vertices, 1)
-
-        self = new()
+        self.verticesCount = size(vertices, 1)
 
         vao = Array(GLuint, 1)
         glGenVertexArrays(1, vao)
@@ -22,7 +21,8 @@ type Circle
         self.vbo = vbo[1]
         assert(self.vbo != 0)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, verticesCount * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, self.verticesCount * sizeof(GLfloat), vertices,
+                     GL_STATIC_DRAW)
 
         self.program = shaderPrograms.simple
         glUseProgram(self.program)
@@ -44,8 +44,5 @@ function draw(circle::Circle)
     glBindVertexArray(circle.vao)
     glBindBuffer(GL_ARRAY_BUFFER, circle.vbo)
     glUseProgram(circle.program)
-
-    glClearColor(0, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT)
     glDrawArrays(GL_TRIANGLE_FAN, 0, circle.verticesCount)
 end
