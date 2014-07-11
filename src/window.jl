@@ -35,6 +35,8 @@ type Window
         glGenBuffers(1, window.vbo)
         assert(window.vbo[1] != 0)
 
+        window.shaderPrograms = ShaderPrograms()
+
         resizeWindow(window, width, height)
 
         glBindVertexArray(window.vao[1])
@@ -62,8 +64,6 @@ type Window
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
-
-        window.shaderPrograms = ShaderPrograms()
 
         return window
     end
@@ -111,6 +111,10 @@ function resizeWindow(window::Window, width, height)
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0)
     glBindRenderbuffer(GL_RENDERBUFFER, 0)
+
+    projection :: Array{GLfloat, 2} = eye(4)
+    projection[1,1] = height / width
+    setProjectionMatrix(window.shaderPrograms, projection)
 end
 
 function mainLoop(window::Window)
