@@ -2,48 +2,41 @@ type Circle
     vao :: GLuint
     vbo :: GLuint
     program :: GLuint
-    pos :: GLint
     verticesCount :: GLsizei
 
-    function Circle()
+    function Circle(shaderPrograms :: ShaderPrograms)
         vertices :: Array{GLfloat,1} = vcat([0.0f0, 0.0f0],
             vcat( { [cos(i), sin(i)] for i = 0:pi/32:2*pi } ... ))
         verticesCount = size(vertices, 1)
 
+        self = new()
+
         vao = Array(GLuint, 1)
         glGenVertexArrays(1, vao)
-        assert(vao[1] != 0)
-        glBindVertexArray(vao[1])
+        self.vao = vao[1]
+        assert(self.vao != 0)
+        glBindVertexArray(self.vao)
 
         vbo = Array(GLuint, 1)
         glGenBuffers(1, vbo)
-        assert(vbo[1] != 0)
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
+        self.vbo = vbo[1]
+        assert(self.vbo != 0)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, verticesCount * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
 
-        vertexShader = newShader("data/glsl/simple.vert", GL_VERTEX_SHADER)
-        fragmentShader = newShader("data/glsl/simple.frag", GL_FRAGMENT_SHADER)
+        self.program = shaderPrograms.simple
+        glUseProgram(self.program)
 
-        shaderProgram = glCreateProgram()
-        glAttachShader(shaderProgram, vertexShader)
-        glAttachShader(shaderProgram, fragmentShader)
-        glLinkProgram(shaderProgram)
-        glUseProgram(shaderProgram)
-
-        posAttrib = glGetAttribLocation(shaderProgram, "position")
+        posAttrib = glGetAttribLocation(self.program, "position")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 
-        uniColor = glGetUniformLocation(shaderProgram, "triangleColor")
+        uniColor = glGetUniformLocation(self.program, "triangleColor")
         assert(uniColor != -1)
         glUniform3f(uniColor, 1, 1, 0)
 
-        uniPos = glGetUniformLocation(shaderProgram, "pos")
-        glUniform2f(uniPos, 0, 0)
-        assert(uniPos != -1)
-
-        return new(vao[1], vbo[1], shaderProgram, uniPos, verticesCount)
+        return self
     end
 end
 

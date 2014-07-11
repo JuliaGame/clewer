@@ -8,6 +8,7 @@ type Window
     texture :: Array{Uint32, 1}
     vbo :: Array{Uint32, 1}
     shaderProgram :: GLuint
+    shaderPrograms :: ShaderPrograms
 
     function Window(width, height)
         glfwWindow = GLFW.CreateWindow(width, height, "Hello World")
@@ -62,6 +63,8 @@ type Window
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 
+        window.shaderPrograms = ShaderPrograms()
+
         return window
     end
 end
@@ -111,8 +114,8 @@ function resizeWindow(window::Window, width, height)
 end
 
 function mainLoop(window::Window)
-    triangle = Triangle()
-    circle = Circle()
+    triangle = Triangle(window.shaderPrograms)
+    circle = Circle(window.shaderPrograms)
 
     last_time = time()
     frames = 0.0

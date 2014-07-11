@@ -1,3 +1,19 @@
+type ShaderPrograms
+    simple :: GLuint
+
+    function ShaderPrograms()
+        vertexShader = newShader("data/glsl/simple.vert", GL_VERTEX_SHADER)
+        fragmentShader = newShader("data/glsl/simple.frag", GL_FRAGMENT_SHADER)
+
+        self = new(glCreateProgram())
+        glAttachShader(self.simple, vertexShader)
+        glAttachShader(self.simple, fragmentShader)
+        glLinkProgram(self.simple)
+
+        return self
+    end
+end
+
 function newShader(filename :: String, shaderType)
     file = open(filename)
     src = readall(file)
