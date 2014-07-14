@@ -42,12 +42,13 @@ type Circle
     end
 end
 
-function draw(modelview::Modelview, circle::Circle)
-    scale(modelview, rand()+1, 1)
+function draw(self::Circle, modelview::Modelview)
+    translate(modelview, 0, 0.5)
+    scale(modelview, 0.2)
     setUniform(modelview)
 
-    glBindVertexArray(circle.vao)
-    glBindBuffer(GL_ARRAY_BUFFER, circle.vbo)
-    glUseProgram(circle.program)
-    glDrawArrays(GL_TRIANGLE_FAN, 0, circle.verticesCount)
+    glBindVertexArray(self.vao)
+    glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+    glUseProgram(self.program)
+    glDrawArrays(GL_TRIANGLE_FAN, 0, self.verticesCount)
 end

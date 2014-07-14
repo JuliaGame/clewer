@@ -1,4 +1,7 @@
+include("modelview.jl")
+
 type Triangle
+    angle :: GLfloat
     vao :: GLuint
     vbo :: GLuint
     program :: GLuint
@@ -10,7 +13,7 @@ type Triangle
             -0.5f0, -0.5f0
         ]
 
-        self = new()
+        self = new(0)
 
         vao = Array(GLuint, 1)
         glGenVertexArrays(1, vao)
@@ -41,9 +44,17 @@ type Triangle
     end
 end
 
-function draw(triangle::Triangle)
-    glBindVertexArray(triangle.vao)
-    glBindBuffer(GL_ARRAY_BUFFER, triangle.vbo)
-    glUseProgram(triangle.program)
+function step(self::Triangle)
+    self.angle += 0.05
+end
+
+function draw(self::Triangle, previousModelview::Modelview)
+    modelview = copy(previousModelview)
+    rotate(modelview, self.angle)
+    setUniform(modelview)
+
+    glBindVertexArray(self.vao)
+    glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+    glUseProgram(self.program)
     glDrawArrays(GL_TRIANGLES, 0, 3)
 end

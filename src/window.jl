@@ -39,7 +39,7 @@ type Window
         assert(self.vbo[1] != 0)
 
         self.shaderPrograms = ShaderPrograms()
-        self.modelview = Modelview(eye(4), self.shaderPrograms)
+        self.modelview = Modelview(self.shaderPrograms, eye(4))
 
         resizeWindow(self, width, height)
 
@@ -155,19 +155,17 @@ function mainLoop(window::Window)
             sleep(0.008 - dif)
         end
 
-        loadIdentity(window.modelview)
+        step(triangle)
 
         glBindRenderbuffer(GL_FRAMEBUFFER, window.buffer[1])
         glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
 
         glClearColor(0.5, 0.5, 0.5, 1)
         glClear(GL_COLOR_BUFFER_BIT)
+        reset(window.modelview)
 
-        if int(last_time) % 2 == 0
-            draw(triangle)
-        else
-            draw(window.modelview, circle)
-        end
+        draw(triangle, window.modelview)
+        draw(circle, window.modelview)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
 
