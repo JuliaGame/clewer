@@ -1,3 +1,5 @@
+include("modelview.jl")
+
 type Window
     glfwWindow :: GLFW.Window
     width
@@ -9,6 +11,7 @@ type Window
     vbo :: Array{Uint32, 1}
     shaderProgram :: GLuint
     shaderPrograms :: ShaderPrograms
+    modelview::Modelview
 
     function Window(width, height)
         glfwWindow = GLFW.CreateWindow(width, height, "Hello World")
@@ -20,10 +23,10 @@ type Window
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
 
-        window = new(glfwWindow, width, height, vao, Array(Uint32, 1),
+        self = new(glfwWindow, width, height, vao, Array(Uint32, 1),
                    Array(Uint32, 1), Array(Uint32, 1), Array(Uint32, 1))
 
-        GLFW.SetWindowSizeCallback(glfwWindow, (_, width, height) -> resizeWindow(window, width, height))
+        GLFW.SetWindowSizeCallback(glfwWindow, (_, width, height) -> resizeWindow(self, width, height))
 
         vertexes = [
             0.0f0, 0.0f0, 0.0f0, 1.0f0, 1.0f0, 1.0f0, 1.0f0, 0.0f0, # texture coordinates
@@ -32,40 +35,43 @@ type Window
             1.0f0, 1.0f0,
             1.0f0, -1.0f0
         ]
-        glGenBuffers(1, window.vbo)
-        assert(window.vbo[1] != 0)
+        glGenBuffers(1, self.vbo)
+        assert(self.vbo[1] != 0)
 
-        window.shaderPrograms = ShaderPrograms()
+        self.shaderPrograms = ShaderPrograms()
+        self.modelview = Modelview(eye(4), self.shaderPrograms)
 
-        resizeWindow(window, width, height)
+        resizeWindow(self, width, height)
 
-        glBindVertexArray(window.vao[1])
-        glBindBuffer(GL_ARRAY_BUFFER, window.vbo[1])
+        glBindVertexArray(self.vao[1])
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo[1])
 
         glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
 
         vertexShader = newShader("data/glsl/texture.vert", GL_VERTEX_SHADER)
         fragmentShader = newShader("data/glsl/texture.frag", GL_FRAGMENT_SHADER)
 
-        window.shaderProgram = glCreateProgram()
-        assert(window.shaderProgram != 0)
+        self.shaderProgram = glCreateProgram()
+        assert(self.shaderProgram != 0)
 
-        glAttachShader(window.shaderProgram, vertexShader)
-        glAttachShader(window.shaderProgram, fragmentShader)
-        glLinkProgram(window.shaderProgram)
-        glUseProgram(window.shaderProgram)
+        glAttachShader(self.shaderProgram, vertexShader)
+        glAttachShader(self.shaderProgram, fragmentShader)
+        glLinkProgram(self.shaderProgram)
+        glUseProgram(self.shaderProgram)
 
-        posAttrib = glGetAttribLocation(window.shaderProgram, "position")
+        posAttrib = glGetAttribLocation(self.shaderProgram, "position")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
         glEnableVertexAttribArray(posAttrib)
 
-        posAttrib = glGetAttribLocation(window.shaderProgram, "texcoord")
+        posAttrib = glGetAttribLocation(self.shaderProgram, "texcoord")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 
-        return window
+        setModelviewMatrix(self.shaderPrograms, self.modelview.matrix)
+
+        return self
     end
 end
 
@@ -149,6 +155,8 @@ function mainLoop(window::Window)
             sleep(0.008 - dif)
         end
 
+        loadIdentity(window.modelview)
+
         glBindRenderbuffer(GL_FRAMEBUFFER, window.buffer[1])
         glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
 
@@ -158,7 +166,7 @@ function mainLoop(window::Window)
         if int(last_time) % 2 == 0
             draw(triangle)
         else
-            draw(circle)
+            draw(window.modelview, circle)
         end
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)

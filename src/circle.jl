@@ -1,3 +1,5 @@
+include("modelview.jl")
+
 type Circle
     vao :: GLuint
     vbo :: GLuint
@@ -40,7 +42,10 @@ type Circle
     end
 end
 
-function draw(circle::Circle)
+function draw(modelview::Modelview, circle::Circle)
+    scale(modelview, rand()+1, 1)
+    setUniform(modelview)
+
     glBindVertexArray(circle.vao)
     glBindBuffer(GL_ARRAY_BUFFER, circle.vbo)
     glUseProgram(circle.program)

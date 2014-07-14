@@ -1,6 +1,7 @@
 type ShaderPrograms
     simple :: GLuint
     projectionUniform :: GLint
+    modelviewUniform::GLint
 
     function ShaderPrograms()
         vertexShader = newShader("data/glsl/simple.vert", GL_VERTEX_SHADER)
@@ -14,6 +15,8 @@ type ShaderPrograms
 
         self.projectionUniform = glGetUniformLocation(self.simple, "projection")
         assert(self.projectionUniform != -1)
+        self.modelviewUniform = glGetUniformLocation(self.simple, "modelview")
+        assert(self.modelviewUniform != -1)
 
         return self
     end
@@ -23,6 +26,11 @@ function setProjectionMatrix(shaderPrograms :: ShaderPrograms,
                              matrix :: Array{GLfloat, 2})
     glUseProgram(shaderPrograms.simple)
     glUniformMatrix4fv(shaderPrograms.projectionUniform, 1, 0, matrix)
+end
+
+function setModelviewMatrix(shaderPrograms::ShaderPrograms, matrix::Array{GLfloat, 2})
+    glUseProgram(shaderPrograms.simple)
+    glUniformMatrix4fv(shaderPrograms.modelviewUniform, 1, 0, matrix)
 end
 
 function newShader(filename :: String, shaderType)
