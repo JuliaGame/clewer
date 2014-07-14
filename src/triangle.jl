@@ -50,7 +50,7 @@ end
 
 function draw(self::Triangle, previousModelview::Modelview)
     modelview = copy(previousModelview)
-    rotate(modelview, self.angle)
+    rotate(modelview, self.angle, [0, 1, 0.5f0])
     setUniform(modelview)
 
     glBindVertexArray(self.vao)

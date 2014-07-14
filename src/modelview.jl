@@ -19,6 +19,19 @@ function rotate(self::Modelview, angle)
                     [0           0          0 1]]
 end
 
+function rotate(self::Modelview, angle, direction::Vector{GLfloat})
+    c = cos(angle)
+    s = sin(angle)
+    direction /= norm(direction)
+    x = direction[1]
+    y = direction[2]
+    z = direction[3]
+    self.matrix *= [[x*x*(1-c)+c     x*y*(1-c)-z*s   x*z*(1-c)+y*s   0],
+                    [y*x*(1-c)+z*s   y*y*(1-c)+c     y*z*(1-c)-x*s   0],
+                    [x*z*(1-c)-y*s   y*z*(1-c)+x*s   z*z*(1-c)+c     0],
+                    [0               0               0               1]]
+end
+
 function translate(self::Modelview, x, y, z=0)
     self.matrix *= [[1 0 0 x],
                     [0 1 0 y],
