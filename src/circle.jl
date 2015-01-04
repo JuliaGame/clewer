@@ -9,7 +9,7 @@ type Circle
     function Circle(shaderPrograms :: ShaderPrograms)
         self = new()
         vertices :: Array{GLfloat,1} = vcat([0.0f0, 0.0f0],
-            vcat( { [cos(i), sin(i)] for i = 0:pi/32:2*pi } ... ))
+            vcat(Any[ [cos(i), sin(i)] for i = 0:pi/32:2*pi ] ... ))
         self.verticesCount = size(vertices, 1) / 2
 
         vao = Array(GLuint, 1)
