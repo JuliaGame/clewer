@@ -43,7 +43,7 @@ function setUniform(self::Modelview)
     setModelviewMatrix(self.shaderPrograms, self.matrix)
 end
 
-function reset(self::Modelview)
+function loadIdentity(self::Modelview)
     self.matrix = eye(4)
 end
 

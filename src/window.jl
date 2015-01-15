@@ -9,7 +9,6 @@ type Window
     fbo :: Array{Uint32, 1}
     texture :: Array{Uint32, 1}
     vbo :: Array{Uint32, 1}
-    shaderProgram :: GLuint
     shaderPrograms :: ShaderPrograms
     modelview::Modelview
 
@@ -48,23 +47,14 @@ type Window
 
         glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
 
-        vertexShader = newShader("data/glsl/texture.vert", GL_VERTEX_SHADER)
-        fragmentShader = newShader("data/glsl/texture.frag", GL_FRAGMENT_SHADER)
+        glUseProgram(self.shaderPrograms.texture)
 
-        self.shaderProgram = glCreateProgram()
-        assert(self.shaderProgram != 0)
-
-        glAttachShader(self.shaderProgram, vertexShader)
-        glAttachShader(self.shaderProgram, fragmentShader)
-        glLinkProgram(self.shaderProgram)
-        glUseProgram(self.shaderProgram)
-
-        posAttrib = glGetAttribLocation(self.shaderProgram, "position")
+        posAttrib = glGetAttribLocation(self.shaderPrograms.texture, "position")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
         glEnableVertexAttribArray(posAttrib)
 
-        posAttrib = glGetAttribLocation(self.shaderProgram, "texcoord")
+        posAttrib = glGetAttribLocation(self.shaderPrograms.texture, "texcoord")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
@@ -162,7 +152,7 @@ function mainLoop(window::Window)
 
         glClearColor(0.5, 0.5, 0.5, 1)
         glClear(GL_COLOR_BUFFER_BIT)
-        reset(window.modelview)
+        loadIdentity(window.modelview)
 
         draw(triangle, window.modelview)
         draw(circle, window.modelview)
@@ -172,7 +162,7 @@ function mainLoop(window::Window)
         # draw framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
         glBindVertexArray(window.vao[1])
-        glUseProgram(window.shaderProgram)
+        glUseProgram(window.shaderPrograms.texture)
 
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, window.texture[1])
