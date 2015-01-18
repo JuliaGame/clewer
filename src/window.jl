@@ -1,4 +1,7 @@
 include("modelview.jl")
+include("font/text.jl")
+
+using FreeType
 
 type Window
     glfwWindow :: GLFW.Window
@@ -61,6 +64,9 @@ type Window
 
         setModelviewMatrix(self.shaderPrograms, self.modelview.matrix)
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         return self
     end
 end
@@ -117,6 +123,12 @@ function mainLoop(window::Window)
     triangle = Triangle(window.shaderPrograms)
     circle = Circle(window.shaderPrograms)
 
+    library = Array(FT_Library, 1)
+    error = FT_Init_FreeType(library)
+    assert(error == 0)
+    face = Face(library[1], "data/fonts/Lato-Lig.otf")
+    text = Text(window.shaderPrograms, face, "ö")
+
     last_time = time()
     frames = 0.0
     counter = 0.0
@@ -156,6 +168,10 @@ function mainLoop(window::Window)
 
         draw(triangle, window.modelview)
         draw(circle, window.modelview)
+
+        glUseProgram(window.shaderPrograms.texture)
+        glActiveTexture(GL_TEXTURE0)
+        draw(text, window.modelview)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
 

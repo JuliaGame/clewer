@@ -45,8 +45,8 @@ function newShaderProgram(vertex::AbstractString, fragment::AbstractString)
         if status[1] != GL_TRUE
             buffer = Array(Uint8, 512)
             length = Array(Int32, 1)
-            glGetShaderInfoLog(shader, size(buffer, 1), convert(Ptr{Int}, length),
-                               convert(Ptr{Int}, buffer))
+            glGetShaderInfoLog(shader, size(buffer, 1), length, pointer(buffer))
+            buffer[length[1]] = '\0'
             error(bytestring(buffer))
         end
         return shader
