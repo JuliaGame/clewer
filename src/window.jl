@@ -14,6 +14,7 @@ type Window
     vbo :: Array{Uint32, 1}
     shaderPrograms :: ShaderPrograms
     modelview::Modelview
+    windowShader::GLuint
 
     function Window(width, height)
         glfwWindow = GLFW.CreateWindow(width, height, "Hello World")
@@ -41,6 +42,7 @@ type Window
         assert(self.vbo[1] != 0)
 
         self.shaderPrograms = ShaderPrograms()
+        self.windowShader = newShaderProgram("data/glsl/window.vert", "data/glsl/texture.frag")
         self.modelview = Modelview(self.shaderPrograms, eye(4))
 
         resizeWindow(self, width, height)
@@ -50,14 +52,14 @@ type Window
 
         glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
 
-        glUseProgram(self.shaderPrograms.texture)
+        glUseProgram(self.windowShader)
 
-        posAttrib = glGetAttribLocation(self.shaderPrograms.texture, "position")
+        posAttrib = glGetAttribLocation(self.windowShader, "position")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
         glEnableVertexAttribArray(posAttrib)
 
-        posAttrib = glGetAttribLocation(self.shaderPrograms.texture, "texcoord")
+        posAttrib = glGetAttribLocation(self.windowShader, "texcoord")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
@@ -127,7 +129,7 @@ function mainLoop(window::Window)
     error = FT_Init_FreeType(library)
     assert(error == 0)
     face = Face(library[1], "data/fonts/Lato-Lig.otf")
-    text = Text(window.shaderPrograms, face, "ö")
+    text = Text(window.shaderPrograms, face, "Hallo Welt!")
 
     last_time = time()
     frames = 0.0
@@ -169,22 +171,18 @@ function mainLoop(window::Window)
         draw(triangle, window.modelview)
         draw(circle, window.modelview)
 
-        glUseProgram(window.shaderPrograms.texture)
+        glUseProgram(window.shaderPrograms.texture.id)
         glActiveTexture(GL_TEXTURE0)
+        translate(window.modelview, -7, 0)
         draw(text, window.modelview)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
-
-        # draw framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
         glBindVertexArray(window.vao[1])
-        glUseProgram(window.shaderPrograms.texture)
-
+        glUseProgram(window.windowShader)
         glActiveTexture(GL_TEXTURE0)
         glBindTexture(GL_TEXTURE_2D, window.texture[1])
-
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
-
         GLFW.SwapBuffers(window.glfwWindow)
     end
 

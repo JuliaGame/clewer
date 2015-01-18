@@ -1,31 +1,46 @@
-type ShaderPrograms
-    simple :: GLuint
-    texture :: GLuint
-    projectionUniform :: GLint
+type Shader
+    id::GLuint
+    projectionUniform::GLint
     modelviewUniform::GLint
 
-    function ShaderPrograms()
-        self = new(newShaderProgram("data/glsl/simple.vert", "data/glsl/simple.frag"),
-                   newShaderProgram("data/glsl/texture.vert", "data/glsl/texture.frag"))
-
-        self.projectionUniform = glGetUniformLocation(self.simple, "projection")
+    function Shader(vertex::AbstractString, fragment::AbstractString)
+        self = new(newShaderProgram(vertex, fragment))
+        self.projectionUniform = glGetUniformLocation(self.id, "projection")
         assert(self.projectionUniform != -1)
-        self.modelviewUniform = glGetUniformLocation(self.simple, "modelview")
+        self.modelviewUniform = glGetUniformLocation(self.id, "modelview")
         assert(self.modelviewUniform != -1)
-
         return self
     end
 end
 
-function setProjectionMatrix(shaderPrograms :: ShaderPrograms,
-                             matrix :: Array{GLfloat, 2})
-    glUseProgram(shaderPrograms.simple)
-    glUniformMatrix4fv(shaderPrograms.projectionUniform, 1, 0, matrix)
+function setProjectionMatrix(self::Shader, matrix::Array{GLfloat, 2})
+    glUseProgram(self.id)
+    glUniformMatrix4fv(self.projectionUniform, 1, 0, matrix)
 end
 
-function setModelviewMatrix(shaderPrograms::ShaderPrograms, matrix::Array{GLfloat, 2})
-    glUseProgram(shaderPrograms.simple)
-    glUniformMatrix4fv(shaderPrograms.modelviewUniform, 1, 0, matrix)
+function setModelviewMatrix(self::Shader, matrix::Array{GLfloat, 2})
+    glUseProgram(self.id)
+    glUniformMatrix4fv(self.modelviewUniform, 1, 0, matrix)
+end
+
+type ShaderPrograms
+    simple::Shader
+    texture::Shader
+
+    function ShaderPrograms()
+        return new(Shader("data/glsl/simple.vert", "data/glsl/simple.frag"),
+                   Shader("data/glsl/texture.vert", "data/glsl/texture.frag"))
+    end
+end
+
+function setProjectionMatrix(self::ShaderPrograms, matrix::Array{GLfloat, 2})
+    setProjectionMatrix(self.simple, matrix)
+    setProjectionMatrix(self.texture, matrix)
+end
+
+function setModelviewMatrix(self::ShaderPrograms, matrix::Array{GLfloat, 2})
+    setModelviewMatrix(self.simple, matrix)
+    setModelviewMatrix(self.texture, matrix)
 end
 
 function newShaderProgram(vertex::AbstractString, fragment::AbstractString)

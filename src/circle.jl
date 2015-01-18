@@ -26,7 +26,7 @@ type Circle
         glBufferData(GL_ARRAY_BUFFER, self.verticesCount * 2 * sizeof(GLfloat), vertices,
                      GL_STATIC_DRAW)
 
-        self.program = shaderPrograms.simple
+        self.program = shaderPrograms.simple.id
         glUseProgram(self.program)
 
         posAttrib = glGetAttribLocation(self.program, "position")

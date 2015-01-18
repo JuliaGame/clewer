@@ -4,9 +4,9 @@ include("face.jl")
 using FreeType
 
 type Character
-    width::Integer
-    left::Integer
-    top::Integer
+    width::GLfloat
+    left::GLfloat
+    top::GLfloat
     texture::Texture
 
     function Character(shaderPrograms::ShaderPrograms, face::Face, ch::Char)
@@ -29,11 +29,15 @@ type Character
             end
         end
 
-        return new(bitmap.width, glyph.bitmap_left, glyph.bitmap_top,
+        return new((glyph.advance.x >> 6) * 0.01, glyph.bitmap_left * 0.01, glyph.bitmap_top * 0.01,
                    Texture(shaderPrograms, bitmap.width, bitmap.rows, buffer))
     end
 end
 
-function draw(self::Character)
+function draw(self::Character, modelview::Modelview)
+    tmp = copy(modelview)
+    translate(tmp, self.left, self.top)
+    setUniform(tmp)
     draw(self.texture)
+    translate(modelview, self.width, 0)
 end

@@ -27,22 +27,22 @@ type Texture
         glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
 
         vertexes = [
-            1.0f0, 1.0f0, 1.0f0, 0.0f0, 0.0f0, 0.0f0, 0.0f0, 1.0f0, # texture coordinates
+            0.0f0, 1.0f0, 0.0f0, 0.0f0, 1.0f0, 0.0f0, 1.0f0, 1.0f0, # texture coordinates
             0.0f0, -height * 0.01f0,
             0.0f0, 0.0f0,
-            -width * 0.01f0, 0.0f0,
-            -width * 0.01f0, -height * 0.01f0
+            width * 0.01f0, 0.0f0,
+            width * 0.01f0, -height * 0.01f0
         ]
         glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
 
-        glUseProgram(shaderPrograms.texture)
+        glUseProgram(shaderPrograms.texture.id)
 
-        posAttrib = glGetAttribLocation(shaderPrograms.texture, "position")
+        posAttrib = glGetAttribLocation(shaderPrograms.texture.id, "position")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
         glEnableVertexAttribArray(posAttrib)
 
-        posAttrib = glGetAttribLocation(shaderPrograms.texture, "texcoord")
+        posAttrib = glGetAttribLocation(shaderPrograms.texture.id, "texcoord")
         assert(posAttrib >= 0)
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)

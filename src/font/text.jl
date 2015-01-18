@@ -13,8 +13,9 @@ type Text
     end
 end
 
-function draw(self::Text, modelview::Modelview)
+function draw(self::Text, previousModelview::Modelview)
+    modelview = copy(previousModelview)
     for ch in self.characters
-        draw(ch)
+        draw(ch, modelview)
     end
 end

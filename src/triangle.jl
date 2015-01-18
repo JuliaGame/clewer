@@ -28,7 +28,7 @@ type Triangle
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBufferData(GL_ARRAY_BUFFER, size(vertices, 1) * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
 
-        self.program = shaderPrograms.simple
+        self.program = shaderPrograms.simple.id
         glUseProgram(self.program)
 
         posAttrib = glGetAttribLocation(self.program, "position")
