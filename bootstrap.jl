@@ -1,3 +1,3 @@
-Pkg.clone("https://github.com/JuliaGL/ModernGL.jl")
+Pkg.add("ModernGL")
 Pkg.add("GLFW")
 Pkg.clone("FreeType")

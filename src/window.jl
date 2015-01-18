@@ -173,7 +173,7 @@ function mainLoop(window::Window)
 
         glUseProgram(window.shaderPrograms.texture.id)
         glActiveTexture(GL_TEXTURE0)
-        translate(window.modelview, -7, 0)
+        translate(window.modelview, -1.6, 0)
         draw(text, window.modelview)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)

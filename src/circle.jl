@@ -42,7 +42,8 @@ type Circle
     end
 end
 
-function draw(self::Circle, modelview::Modelview)
+function draw(self::Circle, previousModelview::Modelview)
+    modelview = copy(previousModelview)
     translate(modelview, 0, 0.5)
     scale(modelview, 0.2)
     setUniform(modelview)
