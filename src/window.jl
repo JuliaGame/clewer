@@ -1,5 +1,7 @@
 include("modelview.jl")
 include("font/text.jl")
+include("input.jl")
+include("player.jl")
 
 using FreeType
 
@@ -123,7 +125,7 @@ end
 
 function mainLoop(window::Window)
     triangle = Triangle(window.shaderPrograms)
-    circle = Circle(window.shaderPrograms)
+    player = Player(window.shaderPrograms)
 
     library = Array(FT_Library, 1)
     error = FT_Init_FreeType(library)
@@ -135,6 +137,7 @@ function mainLoop(window::Window)
     frames = 0.0
     counter = 0.0
 
+    input = Input(window.glfwWindow)
     joystick = GLFW.JOYSTICK_1
 
     while GLFW.WindowShouldClose(window.glfwWindow) == 0
@@ -169,7 +172,8 @@ function mainLoop(window::Window)
         loadIdentity(window.modelview)
 
         draw(triangle, window.modelview)
-        draw(circle, window.modelview)
+        step(player, input)
+        draw(player, window.modelview)
 
         glUseProgram(window.shaderPrograms.texture.id)
         glActiveTexture(GL_TEXTURE0)

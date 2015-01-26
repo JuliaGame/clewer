@@ -1,16 +1,16 @@
-include("modelview.jl")
-
-type Circle
+type Rectangle
     vao :: GLuint
     vbo :: GLuint
     program :: GLuint
-    verticesCount :: GLsizei
 
-    function Circle(shaderPrograms :: ShaderPrograms)
+    function Rectangle(shaderPrograms :: ShaderPrograms)
         self = new()
-        vertices :: Array{GLfloat,1} = vcat([0.0f0, 0.0f0],
-            vcat(Any[ [cos(i), sin(i)] for i = 0:pi/32:2*pi ] ... ))
-        self.verticesCount = size(vertices, 1) / 2
+        vertices :: Array{GLfloat,1} = [
+            -0.5, 1,
+             0.5, 1,
+             0.5, 0,
+            -0.5, 0
+        ]
 
         vao = Array(GLuint, 1)
         glGenVertexArrays(1, vao)
@@ -23,7 +23,7 @@ type Circle
         self.vbo = vbo[1]
         assert(self.vbo != 0)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, self.verticesCount * 2 * sizeof(GLfloat), vertices,
+        glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), vertices,
                      GL_STATIC_DRAW)
 
         self.program = shaderPrograms.simple.id
@@ -42,10 +42,10 @@ type Circle
     end
 end
 
-function draw(self::Circle, modelview::Modelview)
+function draw(self::Rectangle, modelview::Modelview)
     setUniform(modelview)
     glBindVertexArray(self.vao)
     glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
     glUseProgram(self.program)
-    glDrawArrays(GL_TRIANGLE_FAN, 0, self.verticesCount)
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
 end
