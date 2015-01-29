@@ -1,7 +1,5 @@
 include("enum.jl")
 
-using Match
-
 @enum InputEnum LEFT RIGHT UP DOWN
 
 type Input
@@ -14,11 +12,14 @@ type Input
 end
 
 function isPressed(self::Input, t::InputEnum)
-    rtn = GLFW.GetKey(self.window, @match t begin
-        LEFT => GLFW.KEY_LEFT
-        RIGHT => GLFW.KEY_RIGHT
-        UP => GLFW.KEY_UP
-        DOWN => GLFW.KEY_DOWN
+    rtn = GLFW.GetKey(self.window, if t == LEFT
+        GLFW.KEY_LEFT
+    elseif t == RIGHT
+        GLFW.KEY_RIGHT
+    elseif t == UP
+        GLFW.KEY_UP
+    elseif t == DOWN
+        GLFW.KEY_DOWN
     end)
     if rtn
         if self.waitForRelease[t.n + 1]
