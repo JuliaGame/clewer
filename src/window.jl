@@ -44,7 +44,7 @@ type Window
         assert(self.vbo[1] != 0)
 
         self.shaderPrograms = ShaderPrograms()
-        self.windowShader = newShaderProgram("data/glsl/window.vert", "data/glsl/texture.frag")
+        self.windowShader = newShaderProgram("data/glsl/window.vert", "data/glsl/window.frag")
         self.modelview = Modelview(self.shaderPrograms, eye(4))
 
         resizeWindow(self, width, height)

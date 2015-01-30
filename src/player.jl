@@ -13,10 +13,10 @@ end
 
 function step(self::Player, input::Input)
     if isPressed(input, LEFT)
-        self.angle += 0.1
+        self.angle += 0.02 * pi
     end
     if isPressed(input, RIGHT)
-        self.angle -= 0.1
+        self.angle -= 0.02 * pi
     end
 end
 

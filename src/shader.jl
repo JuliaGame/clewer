@@ -75,5 +75,8 @@ function newShaderProgram(vertex::AbstractString, fragment::AbstractString)
     glAttachShader(tmp, vertexShader)
     glAttachShader(tmp, fragmentShader)
     glLinkProgram(tmp)
+    status = Array(GLint, 1)
+    glGetProgramiv(tmp, GL_LINK_STATUS, status)
+    assert(status[1] == GL_TRUE)
     return tmp
 end

@@ -18,19 +18,9 @@ type Character
 
         assert(bitmap.pixel_mode == FT_PIXEL_MODE_GRAY)
 
-        buffer = Array(UInt8, bitmap.rows * bitmap.width * 4)
-        for y in 1:bitmap.rows
-            for x in 1:bitmap.width
-                buffer[bitmap.width * (y-1) * 4 + (x-1) * 4 + 1] = 255
-                buffer[bitmap.width * (y-1) * 4 + (x-1) * 4 + 2] = 255
-                buffer[bitmap.width * (y-1) * 4 + (x-1) * 4 + 3] = 255
-                buffer[bitmap.width * (y-1) * 4 + (x-1) * 4 + 4] =
-                    unsafe_load(bitmap.buffer, bitmap.width * (y-1)  + x)
-            end
-        end
-
         return new((glyph.advance.x >> 6) * 0.01, glyph.bitmap_left * 0.01, glyph.bitmap_top * 0.01,
-                   Texture(shaderPrograms, bitmap.width, bitmap.rows, buffer))
+                   Texture(shaderPrograms, bitmap.width, bitmap.rows,
+                           pointer_to_array(bitmap.buffer, bitmap.rows * bitmap.width)))
     end
 end
 
