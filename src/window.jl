@@ -131,7 +131,7 @@ function mainLoop(window::Window)
     error = FT_Init_FreeType(library)
     assert(error == 0)
     face = Face(library[1], "data/fonts/Lato-Lig.otf")
-    text = Text(window.shaderPrograms, face, "Hallo Welt!")
+    text = Text(window.shaderPrograms, face, "Hello World")
 
     last_time = time()
     frames = 0.0
@@ -167,13 +167,13 @@ function mainLoop(window::Window)
         glBindRenderbuffer(GL_FRAMEBUFFER, window.buffer[1])
         glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
 
-        glClearColor(0.5, 0.5, 0.5, 1)
+        glClearColor(0, 0, 0, 1)
         glClear(GL_COLOR_BUFFER_BIT)
         loadIdentity(window.modelview)
 
-        draw(triangle, window.modelview)
+        #draw(triangle, window.modelview)
         step(player, input)
-        draw(player, window.modelview)
+        #draw(player, window.modelview)
 
         glUseProgram(window.shaderPrograms.texture.id)
         glActiveTexture(GL_TEXTURE0)

@@ -1,5 +1,7 @@
 include("opengl.jl")
 
+PIXEL_SCALE = 0.005f0
+
 type Texture
     id::GLuint
     vao::GLuint
@@ -8,13 +10,12 @@ type Texture
         id = Array(GLuint, 1)
         glGenTextures(1, id);
         glBindTexture(GL_TEXTURE_2D, id[1])
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE,
-                     C_NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                     data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RED, GL_UNSIGNED_BYTE, data);
 
         vao = Array(GLuint, 1)
         glGenVertexArrays(1, vao)
@@ -28,10 +29,10 @@ type Texture
 
         vertexes = [
             0.0f0, 1.0f0, 0.0f0, 0.0f0, 1.0f0, 0.0f0, 1.0f0, 1.0f0, # texture coordinates
-            0.0f0, -height * 0.01f0,
+            0.0f0, -height * PIXEL_SCALE,
             0.0f0, 0.0f0,
-            width * 0.01f0, 0.0f0,
-            width * 0.01f0, -height * 0.01f0
+            width * PIXEL_SCALE, 0.0f0,
+            width * PIXEL_SCALE, -height * PIXEL_SCALE
         ]
         glBufferData(GL_ARRAY_BUFFER, size(vertexes, 1) * 4, vertexes, GL_STATIC_DRAW)
 
