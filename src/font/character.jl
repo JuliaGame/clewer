@@ -10,7 +10,7 @@ type Character
     texture::Texture
 
     function Character(shaderPrograms::ShaderPrograms, face::Face, ch::Char)
-        error = FT_Load_Char(face.ftFace, ch, FT_LOAD_TARGET_LIGHT | FT_LOAD_RENDER)
+        error = FT_Load_Char(face.ftFace, ch, FT_LOAD_RENDER)
         assert(error == 0)
 
         glyph = unsafe_load(unsafe_load(face.ftFace).glyph)
@@ -79,8 +79,8 @@ type Character
         end
 
 
-        return new((glyph.advance.x >> 6) * PIXEL_SCALE, glyph.bitmap_left * PIXEL_SCALE,
-                   glyph.bitmap_top * PIXEL_SCALE,
+        return new((glyph.advance.x >> 6) * PIXEL_SCALE, (glyph.bitmap_left - SPREAD) * PIXEL_SCALE,
+                   (glyph.bitmap_top + SPREAD) * PIXEL_SCALE,
                    Texture(shaderPrograms, width, height, buffer))
     end
 end

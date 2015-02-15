@@ -1,13 +1,19 @@
 include("character.jl")
+include("character2.jl")
 include("face.jl")
 
 type Text
-    characters::Array{Character,1}
+    characters::Array{Any,1}
 
-    function Text(shaderPrograms::ShaderPrograms, face::Face, text::AbstractString)
+    function Text(shaderPrograms::ShaderPrograms, face::Face, text::AbstractString,
+                  distanceMap = true)
         self = new([])
         for ch in text
-            push!(self.characters, Character(shaderPrograms, face, ch))
+            if distanceMap
+                push!(self.characters, Character(shaderPrograms, face, ch))
+            else
+                push!(self.characters, Character2(shaderPrograms, face, ch))
+            end
         end
         return self
     end
