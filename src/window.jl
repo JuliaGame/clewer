@@ -123,6 +123,7 @@ function mainLoop(window::Window)
     assert(error == 0)
     face = Face(library[1], "data/fonts/Lato-Lig.otf")
     text = Text(window.shaderPrograms, face, "Hello World")
+    text2 = Text(window.shaderPrograms, face, "Hello World", false)
 
     last_time = time()
     frames = 0.0
@@ -166,10 +167,13 @@ function mainLoop(window::Window)
         step(player, input)
         #draw(player, window.modelview)
 
-        glUseProgram(window.shaderPrograms.texture.id)
+        useProgram(window.shaderPrograms, window.shaderPrograms.texture)
         glActiveTexture(GL_TEXTURE0)
         translate(window.modelview, -1.6, 0)
         draw(text, window.modelview)
+        translate(window.modelview, 0, 0.5)
+        useProgram(window.shaderPrograms, window.shaderPrograms.window)
+        draw(text2, window.modelview)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
