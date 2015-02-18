@@ -19,7 +19,7 @@ type Window
     windowShader::GLuint
 
     function Window(width, height)
-        glfwWindow = GLFW.CreateWindow(width, height, "Hello World")
+        glfwWindow = GLFW.CreateWindow(width, height, "clewer")
         GLFW.MakeContextCurrent(glfwWindow)
         GLFW.SwapInterval(1) # enable vsync
 
