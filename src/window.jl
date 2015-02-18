@@ -28,8 +28,19 @@ type Window
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
 
-        self = new(glfwWindow, width, height, vao, Array(Uint32, 1),
-                   Array(Uint32, 1), Array(Uint32, 1), Array(Uint32, 1))
+        self = new(glfwWindow, width, height, vao, zeros(Uint32, 1),
+                   zeros(Uint32, 1), zeros(Uint32, 1), zeros(Uint32, 1))
+
+        # renderbuffer
+        glGenRenderbuffers(1, self.buffer)
+        glBindRenderbuffer(GL_RENDERBUFFER, self.buffer[1])
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height)
+
+        # framebuffer
+        glGenFramebuffers(1, self.fbo)
+        glBindFramebuffer(GL_FRAMEBUFFER, self.fbo[1])
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
+                                  self.buffer[1])
 
         GLFW.SetWindowSizeCallback(glfwWindow, (_, width, height) -> resizeWindow(self, width, height))
 
@@ -75,52 +86,32 @@ type Window
     end
 end
 
-function resizeWindow(window::Window, width, height)
-    window.width = width
-    window.height = height
-    # renderbuffer
-    glGenRenderbuffers(1, window.buffer)
-    glBindRenderbuffer(GL_RENDERBUFFER, window.buffer[1])
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, width, height)
+function resizeWindow(self::Window, width, height)
+    self.width = width
+    self.height = height
 
-    # framebuffer
-    glGenFramebuffers(1, window.fbo)
-    glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
-                              window.buffer[1])
-
-    window.texture[1] = 0
-    glGenTextures(1, window.texture)
-    assert(window.texture[1] != 0)
-    glBindTexture(GL_TEXTURE_2D, window.texture[1])
+    if self.texture[1] != 0
+        glDeleteTextures(1, self.texture)
+    end
+    glGenTextures(1, self.texture)
+    assert(self.texture[1] != 0)
+    glBindTexture(GL_TEXTURE_2D, self.texture[1])
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, C_NULL)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
 
-    vertexBuffer = Array(Uint32, 1)
-    glGenBuffers(1, vertexBuffer)
-    assert(vertexBuffer[1] != 0)
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer[1])
-
-    glBindBuffer(GL_ARRAY_BUFFER, window.vbo[1]) # FIXME: Is this really needed?
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, window.texture[1],
-                           0)
+    glBindFramebuffer(GL_FRAMEBUFFER, self.fbo[1])
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.texture[1], 0)
 
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 
-    glClearColor(1, 0, 0, 1)
-    glClear(GL_COLOR_BUFFER_BIT)
     glViewport(0, 0, width, height)
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0)
-    glBindRenderbuffer(GL_RENDERBUFFER, 0)
 
     projection :: Array{GLfloat, 2} = eye(4)
     projection[1,1] = height / width
-    setProjectionMatrix(window.shaderPrograms, projection)
+    setProjectionMatrix(self.shaderPrograms, projection)
 end
 
 function mainLoop(window::Window)
