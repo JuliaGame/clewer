@@ -1,5 +1,3 @@
-include("enum.jl")
-
 @enum InputEnum LEFT RIGHT UP DOWN
 
 type Input
@@ -22,12 +20,12 @@ function isPressed(self::Input, t::InputEnum)
         GLFW.KEY_DOWN
     end)
     if rtn
-        if self.waitForRelease[t.n + 1]
+        if self.waitForRelease[int(t) + 1]
             return false
         end
-        self.waitForRelease[t.n + 1] = true
+        self.waitForRelease[int(t) + 1] = true
     else
-        self.waitForRelease[t.n + 1] = false
+        self.waitForRelease[int(t) + 1] = false
     end
     return rtn
 end
