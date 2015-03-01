@@ -3,7 +3,6 @@ include("modelview.jl")
 type Triangle
     angle :: GLfloat
     vao :: GLuint
-    vbo :: GLuint
     program :: GLuint
 
     function Triangle(shaderPrograms :: ShaderPrograms)
@@ -23,9 +22,8 @@ type Triangle
 
         vbo = Array(GLuint, 1)
         glGenBuffers(1, vbo)
-        self.vbo = vbo[1]
-        assert(self.vbo != 0)
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        assert(vbo[1] != 0)
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
         glBufferData(GL_ARRAY_BUFFER, size(vertices, 1) * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
 
         self.program = shaderPrograms.simple.id
@@ -48,13 +46,13 @@ function step(self::Triangle)
     self.angle += 0.05
 end
 
-function draw(self::Triangle, previousModelview::Modelview)
+function draw(self::Triangle, previousModelview::Modelview, shaderPrograms::ShaderPrograms)
     modelview = copy(previousModelview)
     rotate(modelview, self.angle, [0, 1, 0.5f0])
-    setUniform(modelview)
+
+    useProgram(shaderPrograms, shaderPrograms.simple)
+    setUniform(shaderPrograms, modelview)
 
     glBindVertexArray(self.vao)
-    glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-    glUseProgram(self.program)
     glDrawArrays(GL_TRIANGLES, 0, 3)
 end

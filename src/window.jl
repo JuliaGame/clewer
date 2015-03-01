@@ -54,9 +54,9 @@ type Window
         glGenBuffers(1, self.vbo)
         assert(self.vbo[1] != 0)
 
-        self.shaderPrograms = ShaderPrograms()
         self.windowShader = newShaderProgram("data/glsl/window.vert", "data/glsl/window.frag")
-        self.modelview = Modelview(self.shaderPrograms, eye(4))
+        self.modelview = Modelview(eye(4))
+        self.shaderPrograms = ShaderPrograms()
 
         resizeWindow(self, width, height)
 
@@ -163,17 +163,17 @@ function mainLoop(window::Window)
         glClear(GL_COLOR_BUFFER_BIT)
         loadIdentity(window.modelview)
 
-        #draw(triangle, window.modelview)
+        draw(triangle, window.modelview, window.shaderPrograms)
         step(player, input)
-        #draw(player, window.modelview)
+        draw(player, window.modelview, window.shaderPrograms)
 
         useProgram(window.shaderPrograms, window.shaderPrograms.texture)
         glActiveTexture(GL_TEXTURE0)
         translate(window.modelview, -1.6, 0)
-        draw(text, window.modelview)
+        draw(text, window.modelview, window.shaderPrograms)
         translate(window.modelview, 0, 0.5)
         useProgram(window.shaderPrograms, window.shaderPrograms.window)
-        draw(text2, window.modelview)
+        draw(text2, window.modelview, window.shaderPrograms)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
         glBindFramebuffer(GL_FRAMEBUFFER, 0)

@@ -20,13 +20,13 @@ function step(self::Player, input::Input)
     end
 end
 
-function draw(self::Player, previousModelview::Modelview)
+function draw(self::Player, previousModelview::Modelview, shaderPrograms::ShaderPrograms)
     modelview = copy(previousModelview)
     translate(modelview, self.position ...)
     modelviewCircle = copy(modelview)
     scale(modelviewCircle, 0.06)
-    draw(self.circle, modelviewCircle)
+    draw(self.circle, modelviewCircle, shaderPrograms)
     rotate(modelview, self.angle, [0.0f0, 0.0f0, 1.0f0])
     scale(modelview, 0.005, 0.25)
-    draw(self.rect, modelview)
+    draw(self.rect, modelview, shaderPrograms)
 end

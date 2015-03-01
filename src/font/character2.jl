@@ -39,10 +39,10 @@ type Character2
     end
 end
 
-function draw(self::Character2, modelview::Modelview)
+function draw(self::Character2, modelview::Modelview, shaderPrograms::ShaderPrograms)
     tmp = copy(modelview)
     translate(tmp, self.left, self.top)
-    setUniform(tmp)
+    setUniform(shaderPrograms, tmp)
     draw(self.texture)
     translate(modelview, self.width, 0)
 end

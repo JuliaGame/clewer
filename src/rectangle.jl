@@ -1,6 +1,5 @@
 type Rectangle
     vao :: GLuint
-    vbo :: GLuint
     program :: GLuint
 
     function Rectangle(shaderPrograms :: ShaderPrograms)
@@ -20,9 +19,8 @@ type Rectangle
 
         vbo = Array(GLuint, 1)
         glGenBuffers(1, vbo)
-        self.vbo = vbo[1]
-        assert(self.vbo != 0)
-        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        assert(vbo[1] != 0)
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
         glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(GLfloat), vertices,
                      GL_STATIC_DRAW)
 
@@ -42,10 +40,9 @@ type Rectangle
     end
 end
 
-function draw(self::Rectangle, modelview::Modelview)
-    setUniform(modelview)
+function draw(self::Rectangle, modelview::Modelview, shaderPrograms::ShaderPrograms)
+    setUniform(shaderPrograms, modelview)
+    useProgram(shaderPrograms, shaderPrograms.simple)
     glBindVertexArray(self.vao)
-    glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-    glUseProgram(self.program)
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4)
 end

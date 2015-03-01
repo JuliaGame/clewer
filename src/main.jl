@@ -2,7 +2,7 @@ include("opengl.jl")
 
 import GLFW
 
-include("shader.jl")
+include("shader_programs.jl")
 include("triangle.jl")
 include("circle.jl")
 include("window.jl")

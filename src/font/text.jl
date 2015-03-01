@@ -19,9 +19,9 @@ type Text
     end
 end
 
-function draw(self::Text, previousModelview::Modelview)
+function draw(self::Text, previousModelview::Modelview, shaderPrograms::ShaderPrograms)
     modelview = copy(previousModelview)
     for ch in self.characters
-        draw(ch, modelview)
+        draw(ch, modelview, shaderPrograms)
     end
 end

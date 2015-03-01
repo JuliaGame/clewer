@@ -1,7 +1,6 @@
 import Base.copy
 
 type Modelview
-    shaderPrograms::ShaderPrograms
     matrix::Array{GLfloat,2}
 end
 
@@ -39,14 +38,10 @@ function translate(self::Modelview, x, y, z=0)
                     [0 0 0 1]]
 end
 
-function setUniform(self::Modelview)
-    setModelviewMatrix(self.shaderPrograms, self.matrix)
-end
-
 function loadIdentity(self::Modelview)
     self.matrix = eye(4)
 end
 
 function copy(self::Modelview)
-    return Modelview(self.shaderPrograms, copy(self.matrix))
+    return Modelview(copy(self.matrix))
 end
