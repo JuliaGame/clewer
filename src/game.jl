@@ -10,7 +10,8 @@ type Game
 
     function Game(shaderPrograms::ShaderPrograms, input::Input)
         self = new(shaderPrograms, input, [], [], [], Circle(shaderPrograms))
-        add(self, Player(window.shaderPrograms, [-0.7, -0.6]))
+        players = [Player(window.shaderPrograms, [-0.7, -0.6]),
+                   Player(window.shaderPrograms, [0.7, -0.6])]
         planets = []
         for i in 1:4
             valid = false
@@ -20,6 +21,12 @@ type Game
                 planet = Planet([(rand()-0.5) * (3.3 - 2*radius), (rand() - 0.5) * (2 - 2*radius)],
                                 radius)
                 valid = true
+                for player in players
+                    if norm(planet.position - player.position) < planet.radius + player.radius * 2
+                        valid = false
+                        break
+                    end
+                end
                 for other in planets
                     if overlap(planet, other)
                         valid = false
@@ -31,6 +38,9 @@ type Game
         end
         for planet in planets
             add(self, planet)
+        end
+        for player in players
+            add(self, player)
         end
         return self
     end

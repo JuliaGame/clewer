@@ -23,7 +23,6 @@ function overlap(self::Planet, other::Planet)
     dist = norm(self.position - other.position)
     SPACING = 0.1
     max = self.radius + other.radius + SPACING
-    print("$dist < $max")
     return dist < max
 end
 

@@ -7,9 +7,10 @@ type Player
     position::Array{Float64, 1}
     angle::Float64
     power::Float64
+    radius::Float32
 
     function Player(shaderPrograms::ShaderPrograms, position)
-        return new(Rectangle(shaderPrograms), position, 0.0, 0.25)
+        return new(Rectangle(shaderPrograms), position, 0.0, 0.25, 0.06)
     end
 end
 
@@ -35,7 +36,7 @@ function draw(self::Player, previousModelview::Modelview, game::Game)
     modelview = copy(previousModelview)
     translate(modelview, self.position ...)
     modelviewCircle = copy(modelview)
-    scale(modelviewCircle, 0.06)
+    scale(modelviewCircle, self.radius)
     draw(game.circle, modelviewCircle, game.shaderPrograms)
     rotate(modelview, self.angle, [0.0f0, 0.0f0, 1.0f0])
     scale(modelview, 0.005, self.power)
