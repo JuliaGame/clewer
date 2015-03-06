@@ -1,11 +1,11 @@
-@enum InputEnum LEFT RIGHT UP DOWN
+@enum InputEnum LEFT RIGHT UP DOWN FIRE
 
 type Input
     window::GLFW.Window
     waitForRelease::Array{Bool,1}
 
     function Input(window::GLFW.Window)
-        return new(window, falses(4))
+        return new(window, falses(5))
     end
 end
 
@@ -18,6 +18,8 @@ function isPressed(self::Input, t::InputEnum)
         GLFW.KEY_UP
     elseif t == DOWN
         GLFW.KEY_DOWN
+    elseif t == FIRE
+        GLFW.KEY_ENTER
     end)
     if rtn
         if self.waitForRelease[int(t) + 1]

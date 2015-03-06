@@ -2,6 +2,7 @@ include("modelview.jl")
 include("font/text.jl")
 include("input.jl")
 include("player.jl")
+include("planet.jl")
 
 using FreeType
 
@@ -116,7 +117,7 @@ end
 
 function mainLoop(window::Window)
     triangle = Triangle(window.shaderPrograms)
-    player = Player(window.shaderPrograms)
+    game = Game(window.shaderPrograms, Input(window.glfwWindow))
 
     library = Array(FT_Library, 1)
     error = FT_Init_FreeType(library)
@@ -129,7 +130,6 @@ function mainLoop(window::Window)
     frames = 0.0
     counter = 0.0
 
-    input = Input(window.glfwWindow)
     joystick = GLFW.JOYSTICK_1
 
     while GLFW.WindowShouldClose(window.glfwWindow) == 0
@@ -163,17 +163,20 @@ function mainLoop(window::Window)
         glClear(GL_COLOR_BUFFER_BIT)
         loadIdentity(window.modelview)
 
-        draw(triangle, window.modelview, window.shaderPrograms)
-        step(player, input)
-        draw(player, window.modelview, window.shaderPrograms)
+        #draw(triangle, window.modelview, window.shaderPrograms)
+        if isPressed(game.input, UP)
+            game = Game(game.shaderPrograms, game.input)
+        end
+        step(game)
+        draw(game, window.modelview)
 
         useProgram(window.shaderPrograms, window.shaderPrograms.texture)
         glActiveTexture(GL_TEXTURE0)
         translate(window.modelview, -1.6, 0)
-        draw(text, window.modelview, window.shaderPrograms)
+        #draw(text, window.modelview, window.shaderPrograms)
         translate(window.modelview, 0, 0.5)
         useProgram(window.shaderPrograms, window.shaderPrograms.window)
-        draw(text2, window.modelview, window.shaderPrograms)
+        #draw(text2, window.modelview, window.shaderPrograms)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
         glBindFramebuffer(GL_FRAMEBUFFER, 0)

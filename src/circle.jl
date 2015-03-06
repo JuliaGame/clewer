@@ -41,8 +41,8 @@ type Circle
 end
 
 function draw(self::Circle, modelview::Modelview, shaderPrograms::ShaderPrograms)
-    setUniform(shaderPrograms, modelview)
     useProgram(shaderPrograms, shaderPrograms.simple)
+    setUniform(shaderPrograms, modelview)
     glBindVertexArray(self.vao)
     glDrawArrays(GL_TRIANGLE_FAN, 0, self.verticesCount)
 end
