@@ -159,7 +159,7 @@ function mainLoop(window::Window)
         glBindRenderbuffer(GL_FRAMEBUFFER, window.buffer[1])
         glBindFramebuffer(GL_FRAMEBUFFER, window.fbo[1])
 
-        glClearColor(0, 0, 0, 1)
+        glClearColor(1, 1, 1, 1)
         glClear(GL_COLOR_BUFFER_BIT)
         loadIdentity(window.modelview)
 

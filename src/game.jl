@@ -10,8 +10,9 @@ type Game
 
     function Game(shaderPrograms::ShaderPrograms, input::Input)
         self = new(shaderPrograms, input, [], [], [], Circle(shaderPrograms))
-        players = [Player(window.shaderPrograms, [-0.7, -0.6]),
-                   Player(window.shaderPrograms, [0.7, -0.6])]
+        players = [Player(window.shaderPrograms, [-0.7, -0.6], [1.0f0, 0.0f0, 0.0f0]),
+                   Player(window.shaderPrograms, [0.7, -0.6], [0.0f0, 1.0f0, 0.0f0]),
+                   Player(window.shaderPrograms, [0.7, 0.6], [0.0f0, 0.0f0, 1.0f0])]
         planets = []
         for i in 1:4
             valid = false
@@ -49,11 +50,11 @@ end
 include("shot-impl.jl")
 
 function step(self::Game)
-    for obj in self.objects
-        step(obj, self)
-    end
     for shot in self.shots
         step(shot, self)
+    end
+    for obj in self.objects
+        step(obj, self)
     end
     for shotToBeRemoved in self.shotsToBeRemoved
         i = 1

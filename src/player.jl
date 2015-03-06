@@ -8,9 +8,10 @@ type Player
     angle::Float64
     power::Float64
     radius::Float32
+    color::Array{Float32,1}
 
-    function Player(shaderPrograms::ShaderPrograms, position)
-        return new(Rectangle(shaderPrograms), position, 0.0, 0.25, 0.06)
+    function Player(shaderPrograms::ShaderPrograms, position, color::Array{Float32,1})
+        return new(Rectangle(shaderPrograms), position, 0.0, 0.25, 0.06, color)
     end
 end
 
@@ -37,6 +38,8 @@ function draw(self::Player, previousModelview::Modelview, game::Game)
     translate(modelview, self.position ...)
     modelviewCircle = copy(modelview)
     scale(modelviewCircle, self.radius)
+    useProgram(game.shaderPrograms, game.shaderPrograms.simple)
+    setColor(game.shaderPrograms, self.color ...)
     draw(game.circle, modelviewCircle, game.shaderPrograms)
     rotate(modelview, self.angle, [0.0f0, 0.0f0, 1.0f0])
     scale(modelview, 0.005, self.power)

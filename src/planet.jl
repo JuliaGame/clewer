@@ -1,10 +1,11 @@
 type Planet
     position::Array{Float64,1}
     radius::Float64
+    color::Array{Float32,1}
 
     function Planet(position, radius)
         assert(radius > 0)
-        return new(position, radius)
+        return new(position, radius, [rand(), rand(), rand()])
     end
 end
 
@@ -30,5 +31,7 @@ function draw(self::Planet, previousModelview::Modelview, game::Game)
     modelview = copy(previousModelview)
     translate(modelview, self.position ...)
     scale(modelview, self.radius)
+    useProgram(game.shaderPrograms, game.shaderPrograms.simple)
+    setColor(game.shaderPrograms, self.color ...)
     draw(game.circle, modelview, game.shaderPrograms)
 end

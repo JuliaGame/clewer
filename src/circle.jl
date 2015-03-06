@@ -32,10 +32,6 @@ type Circle
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 
-        uniColor = glGetUniformLocation(self.program, "triangleColor")
-        assert(uniColor != -1)
-        glUniform3f(uniColor, 1, 1, 0)
-
         return self
     end
 end
