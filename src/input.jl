@@ -22,12 +22,12 @@ function isPressed(self::Input, t::InputEnum)
         GLFW.KEY_ENTER
     end)
     if rtn
-        if self.waitForRelease[int(t) + 1]
+        if self.waitForRelease[Int(t) + 1]
             return false
         end
-        self.waitForRelease[int(t) + 1] = true
+        self.waitForRelease[Int(t) + 1] = true
     else
-        self.waitForRelease[int(t) + 1] = false
+        self.waitForRelease[Int(t) + 1] = false
     end
     return rtn
 end
