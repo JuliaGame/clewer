@@ -74,7 +74,7 @@ type Character
                 elseif dist > 255
                     dist = 255
                 end
-                buffer[width * (y-1) * 4 + (x-1) * 4 + 4] = 255 - int(dist)
+                buffer[width * (y-1) * 4 + (x-1) * 4 + 4] = 255 - round(Int, dist)
             end
         end
 
