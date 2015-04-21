@@ -131,10 +131,21 @@ function mainLoop(window::Window)
     counter = 0.0
 
     joystick = GLFW.JOYSTICK_1
+    const fps = 60
 
     while GLFW.WindowShouldClose(window.glfwWindow) == 0
         GLFW.PollEvents()
 
+        while true
+            dif = time() - last_time
+            if dif >= 1.0 / fps
+                break
+            end
+            wait = 1.0 / fps - dif
+            if wait > 0.04
+                sleep(wait)
+            end
+        end
         old = last_time
         last_time = time()
         counter += last_time - old
@@ -145,13 +156,6 @@ function mainLoop(window::Window)
             framesRounded::Int = round(frames)
             GLFW.SetWindowTitle(window.glfwWindow, "clewer - FPS: $framesRounded")
             frames = 0
-        end
-        while true
-            dif = time() - last_time
-            if dif >= 0.008
-                break
-            end
-            sleep(0.008 - dif)
         end
 
         step(triangle)
