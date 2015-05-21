@@ -24,8 +24,8 @@ type Character
         width = bitmap.width + SPREAD * 2
         height = bitmap.rows + SPREAD * 2
 
-        grid1 = Array((Int32,Int32), height, width)
-        grid2 = Array((Int32,Int32), height, width)
+        grid1 = Array(Tuple{Int32, Int32}, height, width)
+        grid2 = Array(Tuple{Int32, Int32}, height, width)
         for x in 1:width
             for y in 1:height
                 if x <= SPREAD || x > bitmap.width + SPREAD ||
