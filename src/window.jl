@@ -70,7 +70,7 @@ type Window
 
         posAttrib = glGetAttribLocation(self.windowShader, "position")
         assert(posAttrib >= 0)
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 8 * sizeof(GLfloat))
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, Ptr{Void}(8 * sizeof(GLfloat)))
         glEnableVertexAttribArray(posAttrib)
 
         posAttrib = glGetAttribLocation(self.windowShader, "texcoord")
