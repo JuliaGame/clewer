@@ -25,7 +25,7 @@ end
 
 function newShaderProgram(vertex::AbstractString, fragment::AbstractString)
 
-    function newShader(filename :: String, shaderType)
+    function newShader(filename :: AbstractString, shaderType)
         file = open(filename)
         src = readall(file)
         close(file)

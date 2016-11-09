@@ -10,11 +10,11 @@ type Window
     glfwWindow :: GLFW.Window
     width
     height
-    vao :: Array{Uint32, 1}
-    buffer :: Array{Uint32, 1}
-    fbo :: Array{Uint32, 1}
-    texture :: Array{Uint32, 1}
-    vbo :: Array{Uint32, 1}
+    vao :: Array{UInt32, 1}
+    buffer :: Array{UInt32, 1}
+    fbo :: Array{UInt32, 1}
+    texture :: Array{UInt32, 1}
+    vbo :: Array{UInt32, 1}
     shaderPrograms :: ShaderPrograms
     modelview::Modelview
     windowShader::GLuint
@@ -24,13 +24,13 @@ type Window
         GLFW.MakeContextCurrent(glfwWindow)
         GLFW.SwapInterval(1) # enable vsync
 
-        vao = Array(Uint32, 1)
+        vao = Array(UInt32, 1)
         glGenVertexArrays(1, vao)
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
 
-        self = new(glfwWindow, width, height, vao, zeros(Uint32, 1),
-                   zeros(Uint32, 1), zeros(Uint32, 1), zeros(Uint32, 1))
+        self = new(glfwWindow, width, height, vao, zeros(UInt32, 1),
+                   zeros(UInt32, 1), zeros(UInt32, 1), zeros(UInt32, 1))
 
         # renderbuffer
         glGenRenderbuffers(1, self.buffer)
