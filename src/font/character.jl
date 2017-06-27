@@ -1,5 +1,6 @@
 include("../texture.jl")
 include("face.jl")
+include("distancemap.jl")
 
 using FreeType
 
@@ -24,8 +25,8 @@ type Character
         width = bitmap.width + SPREAD * 2
         height = bitmap.rows + SPREAD * 2
 
-        grid1 = Array(Tuple{Int32, Int32}, height, width)
-        grid2 = Array(Tuple{Int32, Int32}, height, width)
+        grid1 = Array{Tuple{Int32, Int32}}(height, width)
+        grid2 = Array{Tuple{Int32, Int32}}(height, width)
         for x in 1:width
             for y in 1:height
                 if x <= SPREAD || x > bitmap.width + SPREAD ||
@@ -46,7 +47,7 @@ type Character
         propagate(grid1)
         propagate(grid2)
 
-        signedDistance = Array(Float32, height, width)
+        signedDistance = Array{Float32}(height, width)
         for y in 1:height
             for x in 1:width
                 dist2 = sqrt(distSq(grid1[y,x]))
@@ -57,7 +58,7 @@ type Character
 
         MAX_DIST = SPREAD
         MIN_DIST = -SPREAD
-        buffer = Array(UInt8, width * height * 4)
+        buffer = Array{UInt8}(width * height * 4)
         for x in 1:width
             for y in 1:height
                 buffer[width * (y-1) * 4 + (x-1) * 4 + 1] = 255

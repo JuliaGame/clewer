@@ -7,7 +7,7 @@ type Texture2
     vao::GLuint
 
     function Texture2(shaderPrograms::ShaderPrograms, width, height, data)
-        id = Array(GLuint, 1)
+        id = Array{GLuint}(1)
         glGenTextures(1, id);
         glBindTexture(GL_TEXTURE_2D, id[1])
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -17,12 +17,12 @@ type Texture2
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        vao = Array(GLuint, 1)
+        vao = Array{GLuint}(1)
         glGenVertexArrays(1, vao)
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
 
-        vbo = Array(GLuint, 1)
+        vbo = Array{GLuint}(1)
         glGenBuffers(1, vbo)
         assert(vbo[1] != 0)
         glBindBuffer(GL_ARRAY_BUFFER, vbo[1])

@@ -24,7 +24,7 @@ type Window
         GLFW.MakeContextCurrent(glfwWindow)
         GLFW.SwapInterval(1) # enable vsync
 
-        vao = Array(UInt32, 1)
+        vao = Array{UInt32}(1)
         glGenVertexArrays(1, vao)
         assert(vao[1] != 0)
         glBindVertexArray(vao[1])
@@ -119,7 +119,7 @@ function mainLoop(window::Window)
     triangle = Triangle(window.shaderPrograms)
     game = Game(window.shaderPrograms, Input(window.glfwWindow))
 
-    library = Array(FT_Library, 1)
+    library = Array{FT_Library}(1)
     error = FT_Init_FreeType(library)
     assert(error == 0)
     face = Face(library[1], "data/fonts/Lato-Lig.otf")

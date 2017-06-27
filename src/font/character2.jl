@@ -21,7 +21,7 @@ type Character2
         width = bitmap.width
         height = bitmap.rows
 
-        buffer = Array(UInt8, width * height * 4)
+        buffer = Array{UInt8}(width * height * 4)
         for x in 1:width
             for y in 1:height
                 buffer[width * (y-1) * 4 + (x-1) * 4 + 1] = 255
