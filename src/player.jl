@@ -2,7 +2,7 @@ include("rectangle.jl")
 include("game.jl")
 include("shot.jl")
 
-type Player
+mutable struct Player
     rect::Rectangle
     position::Array{Float64, 1}
     angle::Float64

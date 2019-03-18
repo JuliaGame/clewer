@@ -1,10 +1,10 @@
-type Planet
+struct Planet
     position::Array{Float64,1}
     radius::Float64
     color::Array{Float32,1}
 
     function Planet(position, radius)
-        assert(radius > 0)
+        @assert radius > 0
         return new(position, radius, [rand(), rand(), rand()])
     end
 end

@@ -1,6 +1,6 @@
 include("circle.jl")
 
-type Shot
+mutable struct Shot
     position::Array{Float64, 1}
     velocity::Array{Float64, 1}
 

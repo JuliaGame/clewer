@@ -1,6 +1,8 @@
 include("shot.jl")
 
-type Game
+using LinearAlgebra
+
+mutable struct Game
     shaderPrograms::ShaderPrograms
     input::Input
     objects::Array{Any, 1}

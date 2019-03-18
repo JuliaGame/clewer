@@ -1,3 +1,4 @@
+using Pkg
 Pkg.add("ModernGL")
 Pkg.add("GLFW")
 Pkg.clone("FreeType")

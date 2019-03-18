@@ -1,6 +1,6 @@
 include("modelview.jl")
 
-type Triangle
+mutable struct Triangle
     angle :: GLfloat
     vao :: GLuint
     program :: GLuint
@@ -14,15 +14,15 @@ type Triangle
 
         self = new(0)
 
-        vao = Array{GLuint}(1)
+        vao = Array{GLuint}(undef, 1)
         glGenVertexArrays(1, vao)
         self.vao = vao[1]
-        assert(self.vao != 0)
+        @assert self.vao != 0
         glBindVertexArray(self.vao)
 
-        vbo = Array{GLuint}(1)
+        vbo = Array{GLuint}(undef, 1)
         glGenBuffers(1, vbo)
-        assert(vbo[1] != 0)
+        @assert vbo[1] != 0
         glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
         glBufferData(GL_ARRAY_BUFFER, size(vertices, 1) * sizeof(GLfloat), vertices, GL_STATIC_DRAW)
 
@@ -30,7 +30,7 @@ type Triangle
         glUseProgram(self.program)
 
         posAttrib = glGetAttribLocation(self.program, "position")
-        assert(posAttrib >= 0)
+        @assert posAttrib >= 0
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 

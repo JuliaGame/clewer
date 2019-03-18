@@ -1,7 +1,7 @@
 include("shader.jl")
 include("modelview.jl")
 
-type ShaderPrograms
+mutable struct ShaderPrograms
     simple::Shader
     texture::Shader
     window::Shader
@@ -14,7 +14,7 @@ type ShaderPrograms
                    Shader("data/glsl/texture.vert", "data/glsl/window.frag"))
         useProgram(self, self.simple)
         self.uniColor = glGetUniformLocation(self.simple.id, "color")
-        assert(self.uniColor != -1)
+        @assert self.uniColor != -1
         return self
     end
 end

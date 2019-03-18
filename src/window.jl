@@ -4,9 +4,10 @@ include("input.jl")
 include("player.jl")
 include("planet.jl")
 
+import LinearAlgebra
 using FreeType
 
-type Window
+mutable struct Window
     glfwWindow :: GLFW.Window
     width
     height
@@ -24,9 +25,9 @@ type Window
         GLFW.MakeContextCurrent(glfwWindow)
         GLFW.SwapInterval(1) # enable vsync
 
-        vao = Array{UInt32}(1)
+        vao = Array{UInt32}(undef, 1)
         glGenVertexArrays(1, vao)
-        assert(vao[1] != 0)
+        @assert vao[1] != 0
         glBindVertexArray(vao[1])
 
         self = new(glfwWindow, width, height, vao, zeros(UInt32, 1),
@@ -53,10 +54,10 @@ type Window
             1.0f0, -1.0f0
         ]
         glGenBuffers(1, self.vbo)
-        assert(self.vbo[1] != 0)
+        @assert self.vbo[1] != 0
 
         self.windowShader = newShaderProgram("data/glsl/window.vert", "data/glsl/window.frag")
-        self.modelview = Modelview(eye(4))
+        self.modelview = Modelview(Matrix{GLfloat}(LinearAlgebra.I, (4, 4)))
         self.shaderPrograms = ShaderPrograms()
 
         resizeWindow(self, width, height)
@@ -69,12 +70,12 @@ type Window
         glUseProgram(self.windowShader)
 
         posAttrib = glGetAttribLocation(self.windowShader, "position")
-        assert(posAttrib >= 0)
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, Ptr{Void}(8 * sizeof(GLfloat)))
+        @assert posAttrib >= 0
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, Ptr{Nothing}(8 * sizeof(GLfloat)))
         glEnableVertexAttribArray(posAttrib)
 
         posAttrib = glGetAttribLocation(self.windowShader, "texcoord")
-        assert(posAttrib >= 0)
+        @assert posAttrib >= 0
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 
@@ -95,7 +96,7 @@ function resizeWindow(self::Window, width, height)
         glDeleteTextures(1, self.texture)
     end
     glGenTextures(1, self.texture)
-    assert(self.texture[1] != 0)
+    @assert self.texture[1] != 0
     glBindTexture(GL_TEXTURE_2D, self.texture[1])
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, C_NULL)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
@@ -106,11 +107,11 @@ function resizeWindow(self::Window, width, height)
     glBindFramebuffer(GL_FRAMEBUFFER, self.fbo[1])
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.texture[1], 0)
 
-    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    @assert glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE
 
     glViewport(0, 0, width, height)
 
-    projection :: Array{GLfloat, 2} = eye(4)
+    projection :: Array{GLfloat, 2} = Matrix{GLfloat}(LinearAlgebra.I, (4, 4))
     projection[1,1] = height / width
     setProjectionMatrix(self.shaderPrograms, projection)
 end
@@ -119,9 +120,9 @@ function mainLoop(window::Window)
     triangle = Triangle(window.shaderPrograms)
     game = Game(window.shaderPrograms, Input(window.glfwWindow))
 
-    library = Array{FT_Library}(1)
+    library = Array{FT_Library}(undef, 1)
     error = FT_Init_FreeType(library)
-    assert(error == 0)
+    @assert error == 0
     face = Face(library[1], "data/fonts/Lato-Lig.otf")
     text = Text(window.shaderPrograms, face, "Hello World")
     text2 = Text(window.shaderPrograms, face, "Hello World", false)
@@ -131,7 +132,7 @@ function mainLoop(window::Window)
     counter = 0.0
 
     joystick = GLFW.JOYSTICK_1
-    const fps = 60
+    fps = 60
 
     while GLFW.WindowShouldClose(window.glfwWindow) == 0
         GLFW.PollEvents()

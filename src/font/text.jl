@@ -2,7 +2,7 @@ include("character.jl")
 include("character2.jl")
 include("face.jl")
 
-type Text
+struct Text
     characters::Array{Any,1}
 
     function Text(shaderPrograms::ShaderPrograms, face::Face, text::AbstractString,

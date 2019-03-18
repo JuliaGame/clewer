@@ -4,7 +4,7 @@ include("distancemap.jl")
 
 using FreeType
 
-type Character
+struct Character
     width::GLfloat
     left::GLfloat
     top::GLfloat
@@ -12,12 +12,12 @@ type Character
 
     function Character(shaderPrograms::ShaderPrograms, face::Face, ch::Char)
         error = FT_Load_Char(face.ftFace, ch, FT_LOAD_RENDER)
-        assert(error == 0)
+        @assert error == 0
 
         glyph = unsafe_load(unsafe_load(face.ftFace).glyph)
         bitmap = glyph.bitmap
 
-        assert(bitmap.pixel_mode == FT_PIXEL_MODE_GRAY)
+        @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
 
         include("font/distancemap.jl")
 
@@ -25,8 +25,8 @@ type Character
         width = bitmap.width + SPREAD * 2
         height = bitmap.rows + SPREAD * 2
 
-        grid1 = Array{Tuple{Int32, Int32}}(height, width)
-        grid2 = Array{Tuple{Int32, Int32}}(height, width)
+        grid1 = Array{Tuple{Int32, Int32}}(undef, height, width)
+        grid2 = Array{Tuple{Int32, Int32}}(undef, height, width)
         for x in 1:width
             for y in 1:height
                 if x <= SPREAD || x > bitmap.width + SPREAD ||
@@ -47,7 +47,7 @@ type Character
         propagate(grid1)
         propagate(grid2)
 
-        signedDistance = Array{Float32}(height, width)
+        signedDistance = Array{Float32}(undef, height, width)
         for y in 1:height
             for x in 1:width
                 dist2 = sqrt(distSq(grid1[y,x]))
@@ -58,7 +58,7 @@ type Character
 
         MAX_DIST = SPREAD
         MIN_DIST = -SPREAD
-        buffer = Array{UInt8}(width * height * 4)
+        buffer = Array{UInt8}(undef, width * height * 4)
         for x in 1:width
             for y in 1:height
                 buffer[width * (y-1) * 4 + (x-1) * 4 + 1] = 255

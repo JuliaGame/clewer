@@ -1,6 +1,6 @@
 @enum InputEnum LEFT RIGHT UP DOWN FIRE
 
-type Input
+struct Input
     window::GLFW.Window
     waitForRelease::Array{Bool,1}
 

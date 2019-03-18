@@ -1,6 +1,7 @@
 import Base.copy
+import LinearAlgebra
 
-type Modelview
+mutable struct Modelview
     matrix::Array{GLfloat,2}
 end
 
@@ -39,7 +40,7 @@ function translate(self::Modelview, x, y, z=0)
 end
 
 function loadIdentity(self::Modelview)
-    self.matrix = eye(4)
+    self.matrix = Matrix{GLfloat}(LinearAlgebra.I, (4, 4))
 end
 
 function copy(self::Modelview)

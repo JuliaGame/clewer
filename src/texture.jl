@@ -2,12 +2,12 @@ include("opengl.jl")
 
 PIXEL_SCALE = 0.005f0
 
-type Texture
+struct Texture
     id::GLuint
     vao::GLuint
 
     function Texture(shaderPrograms::ShaderPrograms, width, height, data)
-        id = Array{GLuint}(1)
+        id = Array{GLuint}(undef, 1)
         glGenTextures(1, id);
         glBindTexture(GL_TEXTURE_2D, id[1])
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -17,14 +17,14 @@ type Texture
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        vao = Array{GLuint}(1)
+        vao = Array{GLuint}(undef, 1)
         glGenVertexArrays(1, vao)
-        assert(vao[1] != 0)
+        @assert vao[1] != 0
         glBindVertexArray(vao[1])
 
-        vbo = Array{GLuint}(1)
+        vbo = Array{GLuint}(undef, 1)
         glGenBuffers(1, vbo)
-        assert(vbo[1] != 0)
+        @assert vbo[1] != 0
         glBindBuffer(GL_ARRAY_BUFFER, vbo[1])
 
         vertexes = [
@@ -39,12 +39,12 @@ type Texture
         glUseProgram(shaderPrograms.texture.id)
 
         posAttrib = glGetAttribLocation(shaderPrograms.texture.id, "position")
-        assert(posAttrib >= 0)
-        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, Ptr{Void}(8 * sizeof(GLfloat)))
+        @assert posAttrib >= 0
+        glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, Ptr{Nothing}(8 * sizeof(GLfloat)))
         glEnableVertexAttribArray(posAttrib)
 
         posAttrib = glGetAttribLocation(shaderPrograms.texture.id, "texcoord")
-        assert(posAttrib >= 0)
+        @assert posAttrib >= 0
         glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, C_NULL)
         glEnableVertexAttribArray(posAttrib)
 

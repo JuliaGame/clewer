@@ -3,7 +3,7 @@ include("face.jl")
 
 using FreeType
 
-type Character2
+struct Character2
     width::GLfloat
     left::GLfloat
     top::GLfloat
@@ -11,17 +11,17 @@ type Character2
 
     function Character2(shaderPrograms::ShaderPrograms, face::Face, ch::Char)
         error = FT_Load_Char(face.ftFace, ch, FT_LOAD_RENDER)
-        assert(error == 0)
+        @assert error == 0
 
         glyph = unsafe_load(unsafe_load(face.ftFace).glyph)
         bitmap = glyph.bitmap
 
-        assert(bitmap.pixel_mode == FT_PIXEL_MODE_GRAY)
+        @assert bitmap.pixel_mode == FT_PIXEL_MODE_GRAY
 
         width = bitmap.width
         height = bitmap.rows
 
-        buffer = Array{UInt8}(width * height * 4)
+        buffer = Array{UInt8}(undef, width * height * 4)
         for x in 1:width
             for y in 1:height
                 buffer[width * (y-1) * 4 + (x-1) * 4 + 1] = 255
